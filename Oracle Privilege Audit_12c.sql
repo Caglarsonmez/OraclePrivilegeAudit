@@ -1,6 +1,8 @@
-/*Çalýþtýrýldýðý veri tabanýnda bulunan rollere atanmýþ yetkileri listeler. Çalýþtýran kiþinin ilgili veri tabanýnda SYS þemasýndaki view'larda da görüntüleme yetkisi olmasý gerekir. 
-Sorgu "Table or view does not exists" hatasý alýrsa çalýþtýran kullanýcýnýn bu tabloya yetkisi yok demektir. Yetki talep edilmeli veya DBA'lerden bu sorguyu çalýþtýrmalarý talep edilmelidir.*/
-/*Bu script Oracle 12C ve öncesi veritabanlarý içindir. Çalýþtýðýnýz veritabaný versiyonunu öðrenmek için "SELECT * FROM V$VERSION" sorgusunu kullanabilirsiniz.*/
+/*This script reports every privilege granted to roles/users in current database. User who runs this script must have select privilege to some catalog views in SYS object.
+If script returns "Table or view does not exists" error it means that current user does not have sufficient privileges for certain views, thus auditing database privileges. Views that are used in this script are listed below;
+dba_role_privs, dba_sys_privs, dba_tab_privs, DBA_COL_PRIVS
+These views can/should be granted for select to auditors.
+This script is meant to work on Oracle 12C databases. You can determine version of your current database with "SELECT * FROM V$VERSION" query. */
 
 select * 
 
