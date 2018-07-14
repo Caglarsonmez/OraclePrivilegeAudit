@@ -2,8 +2,7 @@
 If script returns "Table or view does not exists" error it means that current user does not have sufficient privileges for certain views, thus auditing database privileges. Views that are used in this script are listed below;
 dba_role_privs, dba_sys_privs, dba_tab_privs, DBA_COL_PRIVS
 These views can/should be granted for select to auditors.
-This script is meant to work on Oracle 12C databases. You can determine version of your current database with "SELECT * FROM V$VERSION" query.
-deneme     vsvsdvdfvdfvdfbdf*/
+This script is meant to work on Oracle 12C databases. You can determine version of your current database with "SELECT * FROM V$VERSION" query.*/
 
 select *
 
