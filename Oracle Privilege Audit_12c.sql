@@ -2,80 +2,80 @@
 If script returns "Table or view does not exists" error it means that current user does not have sufficient privileges for certain views, thus auditing database privileges. Views that are used in this script are listed below;
 dba_role_privs, dba_sys_privs, dba_tab_privs, DBA_COL_PRIVS
 These views can/should be granted for select to auditors.
-This script is meant to work on Oracle 12C databases. You can determine version of your current database with "SELECT * FROM V$VERSION" query. */
+This script is meant to work on Oracle 12C databases. You can determine version of your current database with "SELECT * FROM V$VERSION" query.*/
 
-select * 
+select *
 
 from (
 
-select 
-tab.Yetki_Türü,
+select
+tab.Yetki_Tï¿½rï¿½,
 tab.Yetkili,
-(case when tab.Yetkili in ('SYS','OUTLN','SYSTEM','PERFSTAT', 'ANONYMOUS',  'APEX_040200',  'APEX_PUBLIC_USER',  'APPQOSSYS',  'AUDSYS',  'CTXSYS',  'DBSNMP',  'DIP',  'DVF',  'DVSYS',  'EXFSYS',  'FLOWS_FILES',  'GSMADMIN_INTERNAL',  'GSMCATUSER',  'GSMUSER',  'LBACSYS',  'MDDATA',  'MDSYS',  'ORACLE_OCM',  'ORDDATA',  'ORDPLUGINS',  'ORDSYS',  'OUTLN',  'SI_INFORMTN_SCHEMA',  'SPATIAL_CSW_ADMIN_USR',  'SPATIAL_WFS_ADMIN_USR',  'SYS',  'SYSBACKUP',  'SYSDG',  'SYSKM',  'SYSTEM',  'WMSYS',  'XDB',  'XS$NULL',  'OLAPSYS',  'OJVMSYS',  'DV_SECANALYST') or u.common='YES' then 'Sistem Kullanýcýsý'
+(case when tab.Yetkili in ('SYS','OUTLN','SYSTEM','PERFSTAT', 'ANONYMOUS',  'APEX_040200',  'APEX_PUBLIC_USER',  'APPQOSSYS',  'AUDSYS',  'CTXSYS',  'DBSNMP',  'DIP',  'DVF',  'DVSYS',  'EXFSYS',  'FLOWS_FILES',  'GSMADMIN_INTERNAL',  'GSMCATUSER',  'GSMUSER',  'LBACSYS',  'MDDATA',  'MDSYS',  'ORACLE_OCM',  'ORDDATA',  'ORDPLUGINS',  'ORDSYS',  'OUTLN',  'SI_INFORMTN_SCHEMA',  'SPATIAL_CSW_ADMIN_USR',  'SPATIAL_WFS_ADMIN_USR',  'SYS',  'SYSBACKUP',  'SYSDG',  'SYSKM',  'SYSTEM',  'WMSYS',  'XDB',  'XS$NULL',  'OLAPSYS',  'OJVMSYS',  'DV_SECANALYST') or u.common='YES' then 'Sistem Kullanï¿½cï¿½sï¿½'
        when tab.Yetkili in ('DBA') then 'DBA'
-        when r.ROLE is not null then 'Rol' 
-         when u.username is not null then 'User/Obje' 
-          when tab.Yetkili='PUBLIC' then tab.Yetkili 
-           else 'Diðer (sorguda sýkýntý var)' end) Yetkili_Türü,
+        when r.ROLE is not null then 'Rol'
+         when u.username is not null then 'User/Obje'
+          when tab.Yetkili='PUBLIC' then tab.Yetkili
+           else 'Diï¿½er (sorguda sï¿½kï¿½ntï¿½ var)' end) Yetkili_Tï¿½rï¿½,
 tab.Yetki Yetki_Veya_Rol,
 (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) Yetki,
-(case when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) in ('ALTER','WRITE','INSERT','DELETE','UPDATE','BECOME USER','ALTER ANY MATERIALIZED VIEW','ALTER ANY ROLE','ALTER ANY TABLE','ALTER DATABASE','ALTER SESSION','ALTER SYSTEM','ALTER USER','CREATE ANY JOB','CREATE ANY MATERIALIZED VIEW','CREATE ANY PROCEDURE','CREATE ANY TABLE','CREATE ANY VIEW','CREATE MATERIALIZED VIEW','CREATE PROCEDURE','CREATE ROLE','CREATE TABLE','CREATE USER','CREATE VIEW','DELETE ANY TABLE','DROP ANY MATERIALIZED VIEW','DROP ANY ROLE','DROP ANY TABLE','DROP ANY VIEW','DROP PUBLIC DATABASE LINK','DROP USER','EXPORT FULL DATABASE','GRANT ANY OBJECT PRIVILEGE','GRANT ANY PRIVILEGE','GRANT ANY ROLE','INSERT ANY TABLE','MERGE ANY VIEW','UPDATE ANY TABLE') then 'Kritik Deðiþiklik Yetkisi' when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) like '%SELECT%' then 'Tablo Okuma Yetkisi'  else 'Diðer' end) Yetki_Kritikliði,
+(case when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) in ('ALTER','WRITE','INSERT','DELETE','UPDATE','BECOME USER','ALTER ANY MATERIALIZED VIEW','ALTER ANY ROLE','ALTER ANY TABLE','ALTER DATABASE','ALTER SESSION','ALTER SYSTEM','ALTER USER','CREATE ANY JOB','CREATE ANY MATERIALIZED VIEW','CREATE ANY PROCEDURE','CREATE ANY TABLE','CREATE ANY VIEW','CREATE MATERIALIZED VIEW','CREATE PROCEDURE','CREATE ROLE','CREATE TABLE','CREATE USER','CREATE VIEW','DELETE ANY TABLE','DROP ANY MATERIALIZED VIEW','DROP ANY ROLE','DROP ANY TABLE','DROP ANY VIEW','DROP PUBLIC DATABASE LINK','DROP USER','EXPORT FULL DATABASE','GRANT ANY OBJECT PRIVILEGE','GRANT ANY PRIVILEGE','GRANT ANY ROLE','INSERT ANY TABLE','MERGE ANY VIEW','UPDATE ANY TABLE') then 'Kritik Deï¿½iï¿½iklik Yetkisi' when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) like '%SELECT%' then 'Tablo Okuma Yetkisi'  else 'Diï¿½er' end) Yetki_Kritikliï¿½i,
 (case when tp2.grantee is not null then tp2.owner||'.'||tp2.table_name else tab.Yetkili_Olunan_Obje end) Yetkili_Olunan_Obje,
-(case when tp2.owner like '%SYS%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SYS%' then 'Sistem Þemasý' 
-      when tp2.owner like '%XDB%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%XDB%' then 'Sistem Þemasý'
-      when tp2.owner like '%MASTER%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%MASTER%' then 'Sistem Þemasý'
-      when tp2.owner like '%SQLTXPLAIN%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SQLTXPLAIN%' then 'Sistem Þemasý'
-      else 'Veri Þemasý' end) Yetki_Þema_Tipi_FLG, 
+(case when tp2.owner like '%SYS%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SYS%' then 'Sistem ï¿½emasï¿½'
+      when tp2.owner like '%XDB%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%XDB%' then 'Sistem ï¿½emasï¿½'
+      when tp2.owner like '%MASTER%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%MASTER%' then 'Sistem ï¿½emasï¿½'
+      when tp2.owner like '%SQLTXPLAIN%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SQLTXPLAIN%' then 'Sistem ï¿½emasï¿½'
+      else 'Veri ï¿½emasï¿½' end) Yetki_ï¿½ema_Tipi_FLG,
 (case when tp2.grantee is not null then TP2.TYPE else tab.Obje_tipi end) Obje_tipi
 from
 (
--- DBA_ROLE_PRIVS -- 
-select 'Rol Yetkisi' Yetki_Türü,
+-- DBA_ROLE_PRIVS --
+select 'Rol Yetkisi' Yetki_Tï¿½rï¿½,
 rp.GRANTEE Yetkili,
 rp.granted_role Yetki,
 null Yetkili_Olunan_Obje,
 null Obje_tipi
-from dba_role_privs rp -- rollere verilen yetkiler. Bir role baþka bir rol de yetki gibi verilebilir.
--- DBA_ROLE_PRIVS --  
+from dba_role_privs rp -- rollere verilen yetkiler. Bir role baï¿½ka bir rol de yetki gibi verilebilir.
+-- DBA_ROLE_PRIVS --
 union all
--- DBA_SYS_PRIVS -- 
-select 'Sistem Rol Yetkisi' Yetki_Türü,
+-- DBA_SYS_PRIVS --
+select 'Sistem Rol Yetkisi' Yetki_Tï¿½rï¿½,
 sp.GRANTEE Yetkili,
 sp.privilege Yetki,
 null Yetkili_Olunan_Obje,
-null Obje_tipi 
+null Obje_tipi
 from dba_sys_privs sp -- Sistem rolleri. bkz: https://docs.oracle.com/cd/B19306_01/network.102/b14266/admusers.htm#i1008788 ve https://docs.oracle.com/cd/B28359_01/network.111/b28531/authorization.htm#g2199949
--- DBA_SYS_PRIVS -- 
+-- DBA_SYS_PRIVS --
 union all
--- DBA_TAB PRIVS -- 
-select 'Tablo Yetkisi' Yetki_Türü,
+-- DBA_TAB PRIVS --
+select 'Tablo Yetkisi' Yetki_Tï¿½rï¿½,
 TP.GRANTEE Yetkili,
 tp.privilege Yetki,
 tp.owner||'.'||tp.table_name Yetkili_Olunan_Obje,
 tp.type Obje_tipi
-from dba_tab_privs tp -- Tablo bazýnda yetkilendirmeler
--- DBA_TAB PRIVS -- 
+from dba_tab_privs tp -- Tablo bazï¿½nda yetkilendirmeler
+-- DBA_TAB PRIVS --
 union all
--- DBA_COL_PRIVS -- 
-SELECT 'Kolon Yetkisi' Yetki_Türü,
+-- DBA_COL_PRIVS --
+SELECT 'Kolon Yetkisi' Yetki_Tï¿½rï¿½,
 CP.GRANTEE Yetkili,
 CP.privilege Yetki,
 CP.owner||'.'||CP.table_name||'.'||cp.column_name Yetkili_Olunan_Obje,
-'Kolon' Obje_tipi 
+'Kolon' Obje_tipi
 FROM DBA_COL_PRIVS CP
--- DBA_COL_PRIVS -- 
+-- DBA_COL_PRIVS --
 ) tab
-left join dba_tab_privs tp2 on TP2.GRANTEE=tab.YETKI -- bu join sayesinde bir role farklý bir rol yetki olarak verildiyse bu rol sayesinde kazanýlan tablo seviyesi yetkiler de getirilmektedir.
+left join dba_tab_privs tp2 on TP2.GRANTEE=tab.YETKI -- bu join sayesinde bir role farklï¿½ bir rol yetki olarak verildiyse bu rol sayesinde kazanï¿½lan tablo seviyesi yetkiler de getirilmektedir.
 left join dba_roles r on (r.ROLE=tab.yetkili)
 left join dba_users u on (u.username=tab.yetkili)
 ) x
 
-where x.Yetki_Þema_Tipi_FLG='Veri Þemasý' -- Sistem þemalarýný elemek için
-and x.Yetkili_türü != 'Sistem Kullanýcýsý' and x.Yetki_kritikliði='Kritik Deðiþiklik Yetkisi'
-/* ek koþul örnekleri:*/
---and x.Yetkili ='DEVUSER' -- belli bir role ait rol, tablo ve/veya kolon seviyesi yetkileri (priviledge) getirmek için
---and x.Yetki_veya_rol='SELECT ANY TABLE' -- belirli bir yetkinin hangi rol/kullanýcýlara verildiðini getirmek için
---and x.Yetki_veya_rol like '%INSERT%' -- belirli bir yetkinin hangi rol/kullanýcýlara verildiðini getirmek için
---and x.Yetkili_Olunan_obje = 'EDW.CMP_PROPOSAL' -- belirli bir þema veya tablo/kolon üzerinde hangi yetkilerin olduðunu getirmek için (DÝKKAT: yalnýzca obje bazýnda verilen yetkiler için kullanýnýz. Create Table vb birçok yetki tablo/kolon seviyesinde deðil system priviledge seviyesinde verildiðinden bir üstteki aramada incelenmelidir)
---and x.Yetkili_Olunan_obje like 'EDW%' -- belirli bir þema veya tablo/kolon üzerinde hangi yetkilerin olduðunu getirmek için (DÝKKAT: yalnýzca obje bazýnda verilen yetkiler için kullanýnýz. Create Table vb birçok yetki tablo/kolon seviyesinde deðil system priviledge seviyesinde verildiðinden bir üstteki aramada incelenmelidir)
-order by Yetki_türü, Yetkili, Yetkili_olunan_obje
+where x.Yetki_ï¿½ema_Tipi_FLG='Veri ï¿½emasï¿½' -- Sistem ï¿½emalarï¿½nï¿½ elemek iï¿½in
+and x.Yetkili_tï¿½rï¿½ != 'Sistem Kullanï¿½cï¿½sï¿½' and x.Yetki_kritikliï¿½i='Kritik Deï¿½iï¿½iklik Yetkisi'
+/* ek koï¿½ul ï¿½rnekleri:*/
+--and x.Yetkili ='DEVUSER' -- belli bir role ait rol, tablo ve/veya kolon seviyesi yetkileri (priviledge) getirmek iï¿½in
+--and x.Yetki_veya_rol='SELECT ANY TABLE' -- belirli bir yetkinin hangi rol/kullanï¿½cï¿½lara verildiï¿½ini getirmek iï¿½in
+--and x.Yetki_veya_rol like '%INSERT%' -- belirli bir yetkinin hangi rol/kullanï¿½cï¿½lara verildiï¿½ini getirmek iï¿½in
+--and x.Yetkili_Olunan_obje = 'EDW.CMP_PROPOSAL' -- belirli bir ï¿½ema veya tablo/kolon ï¿½zerinde hangi yetkilerin olduï¿½unu getirmek iï¿½in (Dï¿½KKAT: yalnï¿½zca obje bazï¿½nda verilen yetkiler iï¿½in kullanï¿½nï¿½z. Create Table vb birï¿½ok yetki tablo/kolon seviyesinde deï¿½il system priviledge seviyesinde verildiï¿½inden bir ï¿½stteki aramada incelenmelidir)
+--and x.Yetkili_Olunan_obje like 'EDW%' -- belirli bir ï¿½ema veya tablo/kolon ï¿½zerinde hangi yetkilerin olduï¿½unu getirmek iï¿½in (Dï¿½KKAT: yalnï¿½zca obje bazï¿½nda verilen yetkiler iï¿½in kullanï¿½nï¿½z. Create Table vb birï¿½ok yetki tablo/kolon seviyesinde deï¿½il system priviledge seviyesinde verildiï¿½inden bir ï¿½stteki aramada incelenmelidir)
+order by Yetki_tï¿½rï¿½, Yetkili, Yetkili_olunan_obje
