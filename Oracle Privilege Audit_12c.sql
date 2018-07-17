@@ -77,6 +77,7 @@ and x.Grantee_Type != 'System User' -- to exclude system users
 --and x.Privilege_or_Role_Critical_flg='Critical Privilege' -- Excluding select and other privileges and reporting only critical change permissons granted to users
 --and x.Privilege_or_Role_Critical_flg='Select/View Privilege' -- Excluding change and other privileges and reporting only table view permissions
 --and x.Grantee ='DEVUSER' -- for reporting privileges or roles granted to a certain user/role
+--and x.Grantee ='PUBLIC' -- for reporting privileges or roles granted to a PUBLIC; meaning every user on database
 --and x.Privilege_or_Role='SELECT ANY TABLE' -- for reporting users/roles granted with certain roles/privileges
 --and x.Privilege_or_Role like '%INSERT%' -- for reporting users/roles granted with certain roles/privileges but with like condition
 --and x.Granted_Object = 'EDW.CMP_PROPOSAL' -- for reporting privileges granted to users and roles for certain tables (Caution: can be used only for grants given for spesific tables. Many roles/privileges on databases are effective on all tables)
