@@ -9,73 +9,77 @@ select *
 from (
 
 select
-tab.Yetki_T�r�,
-tab.Yetkili,
-(case when tab.Yetkili in ('SYS','OUTLN','SYSTEM','PERFSTAT', 'ANONYMOUS',  'APEX_040200',  'APEX_PUBLIC_USER',  'APPQOSSYS',  'AUDSYS',  'CTXSYS',  'DBSNMP',  'DIP',  'DVF',  'DVSYS',  'EXFSYS',  'FLOWS_FILES',  'GSMADMIN_INTERNAL',  'GSMCATUSER',  'GSMUSER',  'LBACSYS',  'MDDATA',  'MDSYS',  'ORACLE_OCM',  'ORDDATA',  'ORDPLUGINS',  'ORDSYS',  'OUTLN',  'SI_INFORMTN_SCHEMA',  'SPATIAL_CSW_ADMIN_USR',  'SPATIAL_WFS_ADMIN_USR',  'SYS',  'SYSBACKUP',  'SYSDG',  'SYSKM',  'SYSTEM',  'WMSYS',  'XDB',  'XS$NULL',  'OLAPSYS',  'OJVMSYS',  'DV_SECANALYST') or u.common='YES' then 'Sistem Kullan�c�s�'
-       when tab.Yetkili in ('DBA') then 'DBA'
-        when r.ROLE is not null then 'Rol'
-         when u.username is not null then 'User/Obje'
-          when tab.Yetkili='PUBLIC' then tab.Yetkili
-           else 'Di�er (sorguda s�k�nt� var)' end) Yetkili_T�r�,
-tab.Yetki Yetki_Veya_Rol,
-(case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) Yetki,
-(case when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) in ('ALTER','WRITE','INSERT','DELETE','UPDATE','BECOME USER','ALTER ANY MATERIALIZED VIEW','ALTER ANY ROLE','ALTER ANY TABLE','ALTER DATABASE','ALTER SESSION','ALTER SYSTEM','ALTER USER','CREATE ANY JOB','CREATE ANY MATERIALIZED VIEW','CREATE ANY PROCEDURE','CREATE ANY TABLE','CREATE ANY VIEW','CREATE MATERIALIZED VIEW','CREATE PROCEDURE','CREATE ROLE','CREATE TABLE','CREATE USER','CREATE VIEW','DELETE ANY TABLE','DROP ANY MATERIALIZED VIEW','DROP ANY ROLE','DROP ANY TABLE','DROP ANY VIEW','DROP PUBLIC DATABASE LINK','DROP USER','EXPORT FULL DATABASE','GRANT ANY OBJECT PRIVILEGE','GRANT ANY PRIVILEGE','GRANT ANY ROLE','INSERT ANY TABLE','MERGE ANY VIEW','UPDATE ANY TABLE') then 'Kritik De�i�iklik Yetkisi' when (case when tp2.grantee is not null then tp2.privilege else tab.Yetki end) like '%SELECT%' then 'Tablo Okuma Yetkisi'  else 'Di�er' end) Yetki_Kritikli�i,
-(case when tp2.grantee is not null then tp2.owner||'.'||tp2.table_name else tab.Yetkili_Olunan_Obje end) Yetkili_Olunan_Obje,
-(case when tp2.owner like '%SYS%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SYS%' then 'Sistem �emas�'
-      when tp2.owner like '%XDB%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%XDB%' then 'Sistem �emas�'
-      when tp2.owner like '%MASTER%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%MASTER%' then 'Sistem �emas�'
-      when tp2.owner like '%SQLTXPLAIN%' or substr(tab.Yetkili_Olunan_Obje,0,instr(tab.yetkili_olunan_obje,'.')-1) like '%SQLTXPLAIN%' then 'Sistem �emas�'
-      else 'Veri �emas�' end) Yetki_�ema_Tipi_FLG,
-(case when tp2.grantee is not null then TP2.TYPE else tab.Obje_tipi end) Obje_tipi
+tab.Privilege_Type,
+tab.Grantee,
+(case when tab.Grantee in ('SYS','OUTLN','SYSTEM','PERFSTAT', 'ANONYMOUS',  'APEX_040200',  'APEX_PUBLIC_USER',  'APPQOSSYS',  'AUDSYS',  'CTXSYS',  'DBSNMP',  'DIP',  'DVF',  'DVSYS',  'EXFSYS',  'FLOWS_FILES',  'GSMADMIN_INTERNAL',  'GSMCATUSER',  'GSMUSER',  'LBACSYS',  'MDDATA',  'MDSYS',  'ORACLE_OCM',  'ORDDATA',  'ORDPLUGINS',  'ORDSYS',  'OUTLN',  'SI_INFORMTN_SCHEMA',  'SPATIAL_CSW_ADMIN_USR',  'SPATIAL_WFS_ADMIN_USR',  'SYS',  'SYSBACKUP',  'SYSDG',  'SYSKM',  'SYSTEM',  'WMSYS',  'XDB',  'XS$NULL',  'OLAPSYS',  'OJVMSYS',  'DV_SECANALYST') or u.common='YES' or u.oracle_maintained='Y' then 'System User'
+       when tab.Grantee in ('DBA') then 'DBA'
+        when r.ROLE is not null then 'Role'
+         when u.username is not null then 'User/Object'
+          when tab.Grantee='PUBLIC' then tab.Grantee
+           else 'Other / Script Error' end) Grantee_Type,
+tab.Privilege_or_Role Granted_role,
+(case when tp2.grantee is not null then tp2.privilege else tab.Privilege_or_Role end) Privilege_or_Role,
+(case when (case when tp2.grantee is not null then tp2.privilege else tab.Privilege_or_Role end) in ('ALTER','WRITE','INSERT','DELETE','UPDATE','BECOME USER','ALTER ANY MATERIALIZED VIEW','ALTER ANY ROLE','ALTER ANY TABLE','ALTER DATABASE','ALTER SESSION','ALTER SYSTEM','ALTER USER','CREATE ANY JOB','CREATE ANY MATERIALIZED VIEW','CREATE ANY PROCEDURE','CREATE ANY TABLE','CREATE ANY VIEW','CREATE MATERIALIZED VIEW','CREATE PROCEDURE','CREATE ROLE','CREATE TABLE','CREATE USER','CREATE VIEW','DELETE ANY TABLE','DROP ANY MATERIALIZED VIEW','DROP ANY ROLE','DROP ANY TABLE','DROP ANY VIEW','DROP PUBLIC DATABASE LINK','DROP USER','EXPORT FULL DATABASE','GRANT ANY OBJECT PRIVILEGE','GRANT ANY PRIVILEGE','GRANT ANY ROLE','INSERT ANY TABLE','MERGE ANY VIEW','UPDATE ANY TABLE') then 'Critical Privilege' when (case when tp2.grantee is not null then tp2.privilege else tab.Privilege_or_Role end) like '%SELECT%' then 'Select/View Privilege'  else 'Others' end) Privilege_or_Role_Critical_flg,
+(case when tp2.grantee is not null then tp2.owner||'.'||tp2.table_name else tab.Granted_Object end) Granted_Object,
+(case when tp2.owner like '%SYS%' or substr(tab.Granted_Object,0,instr(tab.Granted_Object,'.')-1) like '%SYS%' then 'System Object'
+      when tp2.owner like '%XDB%' or substr(tab.Granted_Object,0,instr(tab.Granted_Object,'.')-1) like '%XDB%' then 'System Object'
+      when tp2.owner like '%MASTER%' or substr(tab.Granted_Object,0,instr(tab.Granted_Object,'.')-1) like '%MASTER%' then 'System Object'
+      when tp2.owner like '%SQLTXPLAIN%' or substr(tab.Granted_Object,0,instr(tab.Granted_Object,'.')-1) like '%SQLTXPLAIN%' then 'System Object'
+      else 'Data Object' end) Privilege_or_Role_Type_Flag,
+(case when tp2.grantee is not null then TP2.TYPE else tab.Granted_Object_Type end) Granted_Object_Type
 from
 (
 -- DBA_ROLE_PRIVS --
-select 'Rol Yetkisi' Yetki_T�r�,
-rp.GRANTEE Yetkili,
-rp.granted_role Yetki,
-null Yetkili_Olunan_Obje,
-null Obje_tipi
-from dba_role_privs rp -- rollere verilen yetkiler. Bir role ba�ka bir rol de yetki gibi verilebilir.
+select 'Role Privileges' Privilege_Type,
+rp.GRANTEE Grantee,
+rp.granted_role Privilege_or_Role,
+null Granted_Object,
+null Granted_Object_Type
+from dba_role_privs rp -- Privileges or roles granted to roles. Roles may also be granted to roles. See Readme for further explanation.
 -- DBA_ROLE_PRIVS --
 union all
 -- DBA_SYS_PRIVS --
-select 'Sistem Rol Yetkisi' Yetki_T�r�,
-sp.GRANTEE Yetkili,
-sp.privilege Yetki,
-null Yetkili_Olunan_Obje,
-null Obje_tipi
-from dba_sys_privs sp -- Sistem rolleri. bkz: https://docs.oracle.com/cd/B19306_01/network.102/b14266/admusers.htm#i1008788 ve https://docs.oracle.com/cd/B28359_01/network.111/b28531/authorization.htm#g2199949
+select 'System Defined Privileges' Privilege_Type,
+sp.GRANTEE Grantee,
+sp.privilege Privilege_or_Role,
+null Granted_Object,
+null Granted_Object_Type
+from dba_sys_privs sp -- System defined privileges. see: https://docs.oracle.com/cd/B19306_01/network.102/b14266/admusers.htm#i1008788 and https://docs.oracle.com/cd/B28359_01/network.111/b28531/authorization.htm#g2199949
 -- DBA_SYS_PRIVS --
 union all
 -- DBA_TAB PRIVS --
-select 'Tablo Yetkisi' Yetki_T�r�,
-TP.GRANTEE Yetkili,
-tp.privilege Yetki,
-tp.owner||'.'||tp.table_name Yetkili_Olunan_Obje,
-tp.type Obje_tipi
-from dba_tab_privs tp -- Tablo baz�nda yetkilendirmeler
+select 'Table Privileges' Privilege_Type,
+TP.GRANTEE Grantee,
+tp.privilege Privilege_or_Role,
+tp.owner||'.'||tp.table_name Granted_Object,
+tp.type Granted_Object_Type
+from dba_tab_privs tp -- Privileges that granted for spesific tables
 -- DBA_TAB PRIVS --
 union all
 -- DBA_COL_PRIVS --
-SELECT 'Kolon Yetkisi' Yetki_T�r�,
-CP.GRANTEE Yetkili,
-CP.privilege Yetki,
-CP.owner||'.'||CP.table_name||'.'||cp.column_name Yetkili_Olunan_Obje,
-'Kolon' Obje_tipi
+SELECT 'Column Privileges' Privilege_Type,
+CP.GRANTEE Grantee,
+CP.privilege Privilege_or_Role,
+CP.owner||'.'||CP.table_name||'.'||cp.column_name Granted_Object,
+'Column' Granted_Object_Type
 FROM DBA_COL_PRIVS CP
 -- DBA_COL_PRIVS --
 ) tab
-left join dba_tab_privs tp2 on TP2.GRANTEE=tab.YETKI -- bu join sayesinde bir role farkl� bir rol yetki olarak verildiyse bu rol sayesinde kazan�lan tablo seviyesi yetkiler de getirilmektedir.
-left join dba_roles r on (r.ROLE=tab.yetkili)
-left join dba_users u on (u.username=tab.yetkili)
+left join dba_tab_privs tp2 on TP2.GRANTEE=tab.Privilege_or_Role --  This join is used to retrieve roles granted to roles. See Readme for further explanation
+left join dba_roles r on (r.ROLE=tab.Grantee)
+left join dba_users u on (u.username=tab.Grantee)
 ) x
 
-where x.Yetki_�ema_Tipi_FLG='Veri �emas�' -- Sistem �emalar�n� elemek i�in
-and x.Yetkili_t�r� != 'Sistem Kullan�c�s�' and x.Yetki_kritikli�i='Kritik De�i�iklik Yetkisi'
-/* ek ko�ul �rnekleri:*/
---and x.Yetkili ='DEVUSER' -- belli bir role ait rol, tablo ve/veya kolon seviyesi yetkileri (priviledge) getirmek i�in
---and x.Yetki_veya_rol='SELECT ANY TABLE' -- belirli bir yetkinin hangi rol/kullan�c�lara verildi�ini getirmek i�in
---and x.Yetki_veya_rol like '%INSERT%' -- belirli bir yetkinin hangi rol/kullan�c�lara verildi�ini getirmek i�in
---and x.Yetkili_Olunan_obje = 'EDW.CMP_PROPOSAL' -- belirli bir �ema veya tablo/kolon �zerinde hangi yetkilerin oldu�unu getirmek i�in (D�KKAT: yaln�zca obje baz�nda verilen yetkiler i�in kullan�n�z. Create Table vb bir�ok yetki tablo/kolon seviyesinde de�il system priviledge seviyesinde verildi�inden bir �stteki aramada incelenmelidir)
---and x.Yetkili_Olunan_obje like 'EDW%' -- belirli bir �ema veya tablo/kolon �zerinde hangi yetkilerin oldu�unu getirmek i�in (D�KKAT: yaln�zca obje baz�nda verilen yetkiler i�in kullan�n�z. Create Table vb bir�ok yetki tablo/kolon seviyesinde de�il system priviledge seviyesinde verildi�inden bir �stteki aramada incelenmelidir)
-order by Yetki_t�r�, Yetkili, Yetkili_olunan_obje
+where x.Privilege_or_Role_Type_Flag='Data Object' -- To exclude system objects
+and x.Grantee_Type != 'System User' -- to exclude system users
+/* Additional condition examples*/
+
+--and x.Privilege_or_Role_Critical_flg='Critical Privilege' -- Excluding select and other privileges and reporting only critical change permissons granted to users
+--and x.Privilege_or_Role_Critical_flg='Select/View Privilege' -- Excluding change and other privileges and reporting only table view permissions
+--and x.Grantee ='DEVUSER' -- for reporting privileges or roles granted to a certain user/role
+--and x.Privilege_or_Role='SELECT ANY TABLE' -- for reporting users/roles granted with certain roles/privileges
+--and x.Privilege_or_Role like '%INSERT%' -- for reporting users/roles granted with certain roles/privileges but with like condition
+--and x.Granted_Object = 'EDW.CMP_PROPOSAL' -- for reporting privileges granted to users and roles for certain tables (Caution: can be used only for grants given for spesific tables. Many roles/privileges on databases are effective on all tables)
+--and x.Granted_Object like 'EDW%' -- for reporting privileges granted to users and roles for certain tables with like condition
+
+order by Privilege_Type, Grantee, Granted_Object
