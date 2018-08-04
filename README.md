@@ -17,17 +17,17 @@ Some Notes:
 - If you encounter a privilege that you don't know, simply google it like "FLASHBACK DATABASE oracle privilege". You can also use links in script comments.
 
 How Roles Work:
-& Roles can be understood as containers of grants, namely privileges. To draw an analogy; roles are baskets carrying privileges. 
- % Example: R_EXAMPLE is a role crated by DBA's. R_EXAMPLE is granted with 3 privileges "SELECT ANY TABLE","SELECT ANY VIEW" and "INSERT ON CORE.CUSTOMERS"
++ Roles can be understood as containers of grants, namely privileges. To draw an analogy; roles are baskets carrying privileges. 
+ + Example: R_EXAMPLE is a role crated by DBA's. R_EXAMPLE is granted with 3 privileges "SELECT ANY TABLE","SELECT ANY VIEW" and "INSERT ON CORE.CUSTOMERS"
 
-& When roles are granted to users, these users are able to use all privileges that came with this role.
- % Example: User_01 is a user and granted with R_EXAMPLE (which is a role). Thus; User_01 can run SELECT scripts on every table and view on this database and insert rows on CORE.CUSTOMERS table.
++ When roles are granted to users, these users are able to use all privileges that came with this role.
+ + Example: User_01 is a user and granted with R_EXAMPLE (which is a role). Thus; User_01 can run SELECT scripts on every table and view on this database and insert rows on CORE.CUSTOMERS table.
  
-& Roles may also be granted with roles like a chain reaction. End users who are granted with such roles can use every privilege with this chain.
- % Example: R_ADMIN is a role crated by DBA's. R_ADMIN is granted with 2 privileges: "CREATE ANY TABLE", "DROP ANY TABLE". And also 1 role: R_EXAMPLE. Ultimately R_ADMIN has 2 privileges and 1 role.
- % Example: User_02 is a user object and granted with role R_ADMIN. Hence User_02 can:
-   1) Create or drop tables with R_ADMIN's: "CREATE ANY TABLE", "DROP ANY TABLE" privileges
-   2) Select every table or views on database because R_EXAMPLE's: "SELECT ANY TABLE","SELECT ANY VIEW" privileges
-   3) INSERT new rows on table CORE.CUSTOMERS because R_EXAMPLE's: "INSERT ON CORE.CUSTOMERS" privilege
++ Roles may also be granted with roles like a chain reaction. End users who are granted with such roles can use every privilege with this chain.
+ + Example: R_ADMIN is a role crated by DBA's. R_ADMIN is granted with 2 privileges: "CREATE ANY TABLE", "DROP ANY TABLE". And also 1 role: R_EXAMPLE. Ultimately R_ADMIN has 2 privileges and 1 role.
+ + Example: User_02 is a user object and granted with role R_ADMIN. Hence User_02 can:
+   +1) Create or drop tables with R_ADMIN's: "CREATE ANY TABLE", "DROP ANY TABLE" privileges
+   +2) Select every table or views on database because R_EXAMPLE's: "SELECT ANY TABLE","SELECT ANY VIEW" privileges
+   +3) INSERT new rows on table CORE.CUSTOMERS because R_EXAMPLE's: "INSERT ON CORE.CUSTOMERS" privilege
    
 It should be noted that this role/privilege structure makes it difficult to understand users ultimate privileges and determine if any anomalies are present.
