@@ -1,4 +1,4 @@
-# OraclePrivilegeAudit
+# Oracle Privilege Audit Readme
 Scripts for auditing Oracle DB Privileges
 
 These scripts may be used for reporting Oracle database level privileges. 
