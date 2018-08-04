@@ -80,7 +80,7 @@ and x.Grantee_Type != 'System User' -- to exclude system users
 --and x.Grantee ='PUBLIC' -- for reporting privileges or roles granted to a PUBLIC; meaning every user on database
 --and x.Privilege_or_Role='SELECT ANY TABLE' -- for reporting users/roles granted with certain roles/privileges
 --and x.Privilege_or_Role like '%INSERT%' -- for reporting users/roles granted with certain roles/privileges but with like condition
---and x.Granted_Object = 'EDW.CMP_PROPOSAL' -- for reporting privileges granted to users and roles for certain tables (Caution: can be used only for grants given for spesific tables. Many roles/privileges on databases are effective on all tables)
---and x.Granted_Object like 'EDW%' -- for reporting privileges granted to users and roles for certain tables with like condition
+--and x.Granted_Object = 'COREBANKING.CUSTOMERS' -- for reporting privileges granted to users and roles for certain tables (Caution: can be used only for grants given for spesific tables. Many roles/privileges on databases are effective on all tables)
+--and x.Granted_Object like '%CUSTOMER%' -- for reporting privileges granted to users and roles for certain tables with like condition
 
 order by Privilege_Type, Grantee, Granted_Object
