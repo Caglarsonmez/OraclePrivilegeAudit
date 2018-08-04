@@ -11,7 +11,7 @@ Having said that, I'll try to explain in simplest way I can which concepts audit
 + No privileges should be granted to PUBLIC user because these privileges would be granted to anybody that can connect to database.
 + System privileges such as "SELECT ANY ...", "INSERT ANY ...", "CRATE ANY ..." containing ANY clauses should not be granted to users because they will let their users run these privileges database-wide. This is generally against segregation of duties.
 + Users should be granted SELECT privileges only for tables according to their organizational duties. "Need-to-know" basis should be taken in consideration with SELECT grants.
-+ Even though scripts report privileges granted to roles and users, roles which are granted with critical privileges should be examined thoroughly. (see below: How Roles Work:)
++ Even though scripts report privileges granted to roles and users, roles which are granted with critical privileges should be examined thoroughly. (see below: How Roles Work)
 
 Some Notes:
 - If you encounter a privilege that you don't know, simply google it like "FLASHBACK DATABASE oracle privilege". You can also use links in script comments.
