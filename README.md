@@ -27,8 +27,10 @@ How Roles Work:
  + Example: R_ADMIN is a role crated by DBA's. R_ADMIN is granted with 2 privileges: "CREATE ANY TABLE", "DROP ANY TABLE". And also 1 role: R_EXAMPLE. Ultimately R_ADMIN has 2 privileges and 1 role.
  + Example: User_02 is a user object and granted with role R_ADMIN. Hence User_02 can:
    
-   +1) Create or drop tables with R_ADMIN's: "CREATE ANY TABLE", "DROP ANY TABLE" privileges
-   +2) Select every table or views on database because R_EXAMPLE's: "SELECT ANY TABLE","SELECT ANY VIEW" privileges
-   +3) INSERT new rows on table CORE.CUSTOMERS because R_EXAMPLE's: "INSERT ON CORE.CUSTOMERS" privilege
+   1) Create or drop tables with R_ADMIN's: "CREATE ANY TABLE", "DROP ANY TABLE" privileges
+   
+   2) Select every table or views on database because R_EXAMPLE's: "SELECT ANY TABLE","SELECT ANY VIEW" privileges
+   
+   3) INSERT new rows on table CORE.CUSTOMERS because R_EXAMPLE's: "INSERT ON CORE.CUSTOMERS" privilege
    
 It should be noted that this role/privilege structure makes it difficult to understand users ultimate privileges and determine if any anomalies are present.
